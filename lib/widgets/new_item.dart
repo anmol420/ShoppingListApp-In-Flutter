@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:shopping_list_app/data/categories.dart';
 import 'package:shopping_list_app/models/category.dart';
+import 'package:shopping_list_app/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -28,7 +29,7 @@ class _NewItemState extends State<NewItem> {
         'shopping-list-app-4dd09-default-rtdb.firebaseio.com',
         'shopping-list.json',
       );
-      await http.post(
+      final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
@@ -42,10 +43,18 @@ class _NewItemState extends State<NewItem> {
         ),
       );
 
+      final Map<String, dynamic> resData = json.decode(response.body);
+
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(
+        GroceryItem(
+            id: resData['name'],
+            name: _enteredName,
+            quantity: _enteredQuantity,
+            category: _selectedCategory),
+      );
     }
   }
 
